@@ -1,6 +1,7 @@
 package com.noxus.youshare.controller;
 
 import com.noxus.youshare.dto.AuthResponseDTO;
+import com.noxus.youshare.dto.LoginRequestDTO;
 import com.noxus.youshare.dto.RegisterRequestDTO;
 import com.noxus.youshare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterRequestDTO newUser) {
-
-        return ResponseEntity.ok().body();
+        AuthResponseDTO user = service.register(newUser);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody RegisterRequestDTO user) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO user) {
+        AuthResponseDTO savedUser = service.login(user);
 
-        return ResponseEntity.ok().body();
+        if (savedUser == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        return ResponseEntity.ok(savedUser);
     }
 }

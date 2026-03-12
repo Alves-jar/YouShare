@@ -1,3 +1,27 @@
 spring:
   application:
+    name: youshare
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/youshare
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+api:
+  security:
+    token:
+      secret: 9f4b1c8e3a7d2f6c4b5e1a9d8c7f3e2a6b4c1d9e8f7a3c2b5d6e1f9a8c7d4e3
