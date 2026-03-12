@@ -1,8 +1,8 @@
 package com.noxus.youshare.controller;
 
-import com.noxus.youshare.dto.AuthResponseDTO;
-import com.noxus.youshare.dto.LoginRequestDTO;
-import com.noxus.youshare.dto.RegisterRequestDTO;
+import com.noxus.youshare.dto.auth.AuthResponseDTO;
+import com.noxus.youshare.dto.auth.LoginRequestDTO;
+import com.noxus.youshare.dto.auth.RegisterRequestDTO;
 import com.noxus.youshare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

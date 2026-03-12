@@ -1,9 +1,8 @@
-package com.noxus.youshare.dto;
+package com.noxus.youshare.dto.user;
 
-public record RegisterRequestDTO(
+public record UserRequestDTO(
     String username,
     String email,
     String password,
     String role
-) {
-}
+) {}

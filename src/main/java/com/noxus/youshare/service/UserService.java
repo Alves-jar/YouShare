@@ -1,8 +1,10 @@
 package com.noxus.youshare.service;
 
-import com.noxus.youshare.dto.AuthResponseDTO;
-import com.noxus.youshare.dto.LoginRequestDTO;
-import com.noxus.youshare.dto.RegisterRequestDTO;
+import com.noxus.youshare.dto.auth.AuthResponseDTO;
+import com.noxus.youshare.dto.auth.LoginRequestDTO;
+import com.noxus.youshare.dto.auth.RegisterRequestDTO;
+import com.noxus.youshare.dto.user.UserRequestDTO;
+import com.noxus.youshare.dto.user.UserResponseDTO;
 import com.noxus.youshare.entity.User;
 import com.noxus.youshare.entity.enums.UserRole;
 import com.noxus.youshare.exception.UserNotFoundException;
@@ -11,6 +13,10 @@ import com.noxus.youshare.security.JwtTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -49,5 +55,53 @@ public class UserService {
             );
         }
         throw new RuntimeException("Invalid credentials");
+    }
+
+    public UserResponseDTO create(UserRequestDTO newUser) {
+        UserRole role = newUser.role().equals("editor") ? UserRole.EDITOR : UserRole.CREATOR;
+        User user = new User(
+            null,
+            newUser.username(),
+            newUser.email(),
+            passwordEncoder.encode(newUser.password()),
+            role
+        );
+
+        User savedUser = repository.save(user);
+
+        return new UserResponseDTO(
+            savedUser.getId(),
+            savedUser.getUsername(),
+            savedUser.getEmail(),
+            role
+        );
+    }
+
+    public List<UserResponseDTO> findAll() {
+        List<User> registeredUsers = repository.findAll();
+        List<UserResponseDTO> users = new ArrayList<>();
+
+        registeredUsers.forEach(u ->
+            users.add(new UserResponseDTO(
+                u.getId(),
+                u.getUsername(),
+                u.getEmail(),
+                u.getRole()
+            ))
+        );
+
+        return users;
+    }
+
+public UserResponseDTO findById(UUID id) {
+        User registeredUser = repository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("User with id "+ id + " not found"));
+
+        return new UserResponseDTO(
+            registeredUser.getId(),
+            registeredUser.getUsername(),
+            registeredUser.getEmail(),
+            registeredUser.getRole()
+        );
     }
 }
