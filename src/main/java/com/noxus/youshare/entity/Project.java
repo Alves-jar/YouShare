@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -40,4 +41,7 @@ public class Project {
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private Date createdAt;
+
+    @OneToMany(mappedBy = "project")
+    private List<ProjectMember> members;
 }

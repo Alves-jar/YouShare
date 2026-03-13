@@ -49,4 +49,8 @@ public class User {
     @OneToMany(mappedBy = "creator")
     private List<Project> projects;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<ProjectMember> memberships;
+
 }
