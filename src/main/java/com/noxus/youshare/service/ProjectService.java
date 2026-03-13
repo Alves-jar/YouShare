@@ -28,14 +28,14 @@ public class ProjectService {
         User creator = userRepository.findByUsername(newProject.creatorUsername())
             .orElseThrow(() -> new UserNotFoundException("User " + newProject.creatorUsername() + " not found"));
 
-        Project project = new Project(
-            null,
-            newProject.title(),
-            newProject.description(),
-            creator,
-            ProjectStatus.fromString(newProject.status()),
-            null
-        );
+        Project project = new Project();
+        project.setId(null);
+        project.setTitle(newProject.title());
+        project.setDescription(newProject.description());
+        project.setCreator(creator);
+        project.setStatus(ProjectStatus.fromString(newProject.status()));
+        project.setCreatedAt(null);
+        project.setMembers(null);
 
         Project saved = repository.save(project);
         return toDTO(saved);

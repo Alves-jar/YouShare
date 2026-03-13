@@ -1,0 +1,2 @@
+ALTER TABLE project_members
+    ADD COLUMN invite_status VARCHAR(20) NOT NULL DEFAULT 'INVITED';

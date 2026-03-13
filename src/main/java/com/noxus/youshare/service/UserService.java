@@ -27,15 +27,15 @@ public class UserService {
     private final JwtTokenService jwtTokenService;
 
     public AuthResponseDTO register(RegisterRequestDTO newUser) {
-        User user = new User(
-            null,
-            newUser.username(),
-            newUser.email(),
-            passwordEncoder.encode(newUser.password()),
-            UserRole.fromString(newUser.role()),
-            null,
-            null
-        );
+        User user = new User();
+        user.setId(null);
+        user.setUsername(newUser.username());
+        user.setEmail(newUser.email());
+        user.setPassword(passwordEncoder.encode(newUser.password()));
+        user.setRole(UserRole.fromString(newUser.role()));
+        user.setCreatedAt(null);
+        user.setProjects(null);
+        user.setMemberships(null);
 
         repository.save(user);
 
@@ -59,15 +59,15 @@ public class UserService {
     }
 
     public UserResponseDTO create(UserRequestDTO newUser) {
-        User user = new User(
-            null,
-            newUser.username(),
-            newUser.email(),
-            passwordEncoder.encode(newUser.password()),
-            UserRole.fromString(newUser.role()),
-            null,
-            null
-        );
+        User user = new User();
+        user.setId(null);
+        user.setUsername(newUser.username());
+        user.setEmail(newUser.email());
+        user.setPassword(passwordEncoder.encode(newUser.password()));
+        user.setRole(UserRole.fromString(newUser.role()));
+        user.setCreatedAt(null);
+        user.setProjects(null);
+        user.setMemberships(null);
 
         User savedUser = repository.save(user);
 

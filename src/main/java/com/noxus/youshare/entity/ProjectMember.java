@@ -1,5 +1,6 @@
 package com.noxus.youshare.entity;
 
+import com.noxus.youshare.entity.enums.InviteStatus;
 import com.noxus.youshare.entity.enums.MemberRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,10 @@ public class ProjectMember {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemberRole role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "invite_status", nullable = false)
+    private InviteStatus inviteStatus;
 
     @CreatedDate
     @Column(name = "joined_at", updatable = false, nullable = false)

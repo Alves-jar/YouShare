@@ -42,4 +42,14 @@ public class AuthExceptionHandler {
         );
         return ResponseEntity.status(403).body(error);
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<StandardError> handleIllegalState(
+        IllegalStateException ex, HttpServletRequest request
+    ) {
+        StandardError error = new StandardError(
+            Instant.now(), 409, "Conflict", ex.getMessage(), request.getRequestURI()
+        );
+        return ResponseEntity.status(409).body(error);
+    }
 }
