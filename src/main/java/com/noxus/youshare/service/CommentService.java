@@ -30,6 +30,9 @@ public class CommentService {
     @Autowired
     private ProjectMemberRepository projectMemberRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Transactional
     public Comment createComment(UUID versionId, User user, CommentRequestDTO requestDTO) {
         VideoVersion version = videoVersionRepository.findById(versionId)
@@ -48,7 +51,13 @@ public class CommentService {
         comment.setUser(user);
         comment.setContent(content.trim());
 
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+
+        if (!version.getUploadedBy().getId().equals(user.getId())) {
+            notificationService.createNewCommentNotification(version.getUploadedBy(), version, user);
+        }
+
+        return savedComment;
     }
 
     public List<Comment> getCommentsByVersion(UUID versionId) {

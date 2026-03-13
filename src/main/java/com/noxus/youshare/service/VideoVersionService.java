@@ -15,6 +15,7 @@ import com.noxus.youshare.repository.ProjectMemberRepository;
 import com.noxus.youshare.repository.ProjectRepository;
 import com.noxus.youshare.repository.VideoRepository;
 import com.noxus.youshare.repository.VideoVersionRepository;
+import com.noxus.youshare.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,9 @@ public class VideoVersionService {
 
     @Autowired
     private ProjectMemberRepository projectMemberRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Value("${app.video.upload-dir:uploads/videos}")
     private String uploadDir;
@@ -93,7 +97,11 @@ public class VideoVersionService {
             version.setApprovedAt(null);
             version.setRejectionReason(null);
 
-            return videoVersionRepository.save(version);
+            VideoVersion savedVersion = videoVersionRepository.save(version);
+            
+            notificationService.createNewVersionNotification(video.getProject().getCreator(), savedVersion, uploadedBy);
+            
+            return savedVersion;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store video version file", e);
         }

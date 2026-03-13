@@ -27,6 +27,7 @@ public class ProjectMemberService {
     private final ProjectMemberRepository memberRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public ProjectMemberResponseDTO invite(UUID projectId, InviteRequestDTO body, User authenticatedUser) {
         Project project = projectRepository.findById(projectId)
@@ -54,6 +55,9 @@ public class ProjectMemberService {
         );
 
         ProjectMember saved = memberRepository.save(member);
+        
+        notificationService.createEditorInviteNotification(invitedUser, project, authenticatedUser);
+        
         return toDTO(saved);
     }
 
