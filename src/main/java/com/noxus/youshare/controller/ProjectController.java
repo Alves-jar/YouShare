@@ -4,6 +4,9 @@ import com.noxus.youshare.dto.project.ProjectRequestDTO;
 import com.noxus.youshare.dto.project.ProjectResponseDTO;
 import com.noxus.youshare.entity.User;
 import com.noxus.youshare.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,10 +20,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/projects")
 @AllArgsConstructor
+@Tag(name = "Projects", description = "Endpoints for video project management")
 public class ProjectController {
 
     private final ProjectService service;
 
+    @Operation(summary = "Create new project", description = "Creates a new video project in the system")
     @PostMapping
     public ResponseEntity<ProjectResponseDTO> create(@RequestBody ProjectRequestDTO body) {
         ProjectResponseDTO project = service.create(body);
@@ -34,30 +39,33 @@ public class ProjectController {
         return ResponseEntity.created(uri).body(project);
     }
 
+    @Operation(summary = "List all projects", description = "Returns a list of all registered projects")
     @GetMapping
     public ResponseEntity<List<ProjectResponseDTO>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @Operation(summary = "Get project by ID", description = "Returns details of a specific project")
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> findById(@PathVariable UUID id) {
+    public ResponseEntity<ProjectResponseDTO> findById(
+            @Parameter(description = "Project ID", required = true) @PathVariable UUID id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @Operation(summary = "Update project", description = "Updates an existing project's data")
     @PutMapping("/{id}")
     public ResponseEntity<ProjectResponseDTO> update(
-        @PathVariable UUID id,
-        @RequestBody ProjectRequestDTO body,
-        @AuthenticationPrincipal User authenticatedUser
-    ) {
+            @Parameter(description = "Project ID", required = true) @PathVariable UUID id,
+            @RequestBody ProjectRequestDTO body,
+            @AuthenticationPrincipal User authenticatedUser) {
         return ResponseEntity.ok(service.update(id, body, authenticatedUser));
     }
 
+    @Operation(summary = "Delete project", description = "Removes a project from the system")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-        @PathVariable UUID id,
-        @AuthenticationPrincipal User authenticatedUser
-    ) {
+            @Parameter(description = "Project ID", required = true) @PathVariable UUID id,
+            @AuthenticationPrincipal User authenticatedUser) {
         service.delete(id, authenticatedUser);
         return ResponseEntity.noContent().build();
     }

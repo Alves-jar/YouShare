@@ -3,6 +3,9 @@ package com.noxus.youshare.controller;
 import com.noxus.youshare.dto.user.UserRequestDTO;
 import com.noxus.youshare.dto.user.UserResponseDTO;
 import com.noxus.youshare.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +18,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
+@Tag(name = "Users", description = "Endpoints for user management")
 public class UserController {
 
     private final UserService service;
 
+    @Operation(summary = "Create new user", description = "Creates a new user in the system")
     @PostMapping
     public ResponseEntity<UserResponseDTO> create(@RequestBody UserRequestDTO newUser) {
         UserResponseDTO user = service.create(newUser);
@@ -32,6 +37,7 @@ public class UserController {
         return ResponseEntity.created(uri).body(user);
     }
 
+    @Operation(summary = "List all users", description = "Returns a list of all registered users")
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAll() {
         List<UserResponseDTO> users = service.findAll();
@@ -39,8 +45,10 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @Operation(summary = "Get user by ID", description = "Returns details of a specific user")
     @GetMapping("/{id}")
-    public  ResponseEntity<UserResponseDTO> findById(@PathVariable UUID id) {
+    public ResponseEntity<UserResponseDTO> findById(
+            @Parameter(description = "User ID", required = true) @PathVariable UUID id) {
         UserResponseDTO user= service.findById(id);
 
         return ResponseEntity.ok(user);

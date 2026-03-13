@@ -3,6 +3,9 @@ package com.noxus.youshare.controller;
 import com.noxus.youshare.dto.video.VideoResponseDTO;
 import com.noxus.youshare.entity.Video;
 import com.noxus.youshare.service.VideoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -21,14 +24,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/videos")
 @AllArgsConstructor
+@Tag(name = "Videos", description = "Endpoints for video management")
 public class VideoController {
 
     private final VideoService videoService;
 
+    @Operation(summary = "Upload video", description = "Uploads a video to a project")
     @PostMapping("/projects/{projectId}")
     public ResponseEntity<VideoResponseDTO> uploadVideo(
             @RequestParam("file") MultipartFile file,
-            @PathVariable UUID projectId,
+            @Parameter(description = "Project ID", required = true) @PathVariable UUID projectId,
             @RequestParam(required = false) String description,
             @AuthenticationPrincipal com.noxus.youshare.entity.User user) {
 
@@ -38,8 +43,10 @@ public class VideoController {
                 .body(toDTO(video));
     }
 
+    @Operation(summary = "List project videos", description = "Returns all videos from a specific project")
     @GetMapping("/projects/{projectId}")
-    public ResponseEntity<List<VideoResponseDTO>> getProjectVideos(@PathVariable UUID projectId) {
+    public ResponseEntity<List<VideoResponseDTO>> getProjectVideos(
+            @Parameter(description = "Project ID", required = true) @PathVariable UUID projectId) {
         List<Video> videos = videoService.findByProject(projectId);
         List<VideoResponseDTO> dtos = videos.stream()
                 .map(this::toDTO)
