@@ -33,7 +33,9 @@ public class UserService {
             newUser.username(),
             newUser.email(),
             passwordEncoder.encode(newUser.password()),
-            role
+            role,
+            null,
+            null
         );
 
         repository.save(user);
@@ -64,7 +66,9 @@ public class UserService {
             newUser.username(),
             newUser.email(),
             passwordEncoder.encode(newUser.password()),
-            role
+            role,
+            null,
+            null
         );
 
         User savedUser = repository.save(user);
@@ -73,7 +77,8 @@ public class UserService {
             savedUser.getId(),
             savedUser.getUsername(),
             savedUser.getEmail(),
-            role
+            role,
+            savedUser.getCreatedAt()
         );
     }
 
@@ -86,7 +91,8 @@ public class UserService {
                 u.getId(),
                 u.getUsername(),
                 u.getEmail(),
-                u.getRole()
+                u.getRole(),
+                u.getCreatedAt()
             ))
         );
 
@@ -101,7 +107,8 @@ public UserResponseDTO findById(UUID id) {
             registeredUser.getId(),
             registeredUser.getUsername(),
             registeredUser.getEmail(),
-            registeredUser.getRole()
+            registeredUser.getRole(),
+            registeredUser.getCreatedAt()
         );
     }
 }

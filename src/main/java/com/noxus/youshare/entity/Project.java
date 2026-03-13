@@ -1,52 +1,43 @@
 package com.noxus.youshare.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.noxus.youshare.entity.enums.UserRole;
+import com.noxus.youshare.entity.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "projects")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class User {
+@AllArgsConstructor
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Column(nullable = false, length = 50)
+    private String title;
+    private String description;
 
-    @Column(unique = true, nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role;
+    private ProjectStatus status;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private Date createdAt;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "creator")
-    private List<Project> projects;
-
 }
