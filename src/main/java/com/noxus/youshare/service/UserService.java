@@ -27,13 +27,12 @@ public class UserService {
     private final JwtTokenService jwtTokenService;
 
     public AuthResponseDTO register(RegisterRequestDTO newUser) {
-        UserRole role = newUser.role().equals("editor") ? UserRole.EDITOR : UserRole.CREATOR;
         User user = new User(
             null,
             newUser.username(),
             newUser.email(),
             passwordEncoder.encode(newUser.password()),
-            role,
+            UserRole.fromString(newUser.role()),
             null,
             null
         );
@@ -48,7 +47,7 @@ public class UserService {
 
     public AuthResponseDTO login(LoginRequestDTO user) {
         User registeredUser = repository.findByEmail(user.email())
-                .orElseThrow(() -> new UserNotFoundException("User not found.")
+            .orElseThrow(() -> new UserNotFoundException("User not found.")
             );
         if (passwordEncoder.matches(user.password(), registeredUser.getPassword())) {
             return new AuthResponseDTO(
@@ -60,13 +59,12 @@ public class UserService {
     }
 
     public UserResponseDTO create(UserRequestDTO newUser) {
-        UserRole role = newUser.role().equals("editor") ? UserRole.EDITOR : UserRole.CREATOR;
         User user = new User(
             null,
             newUser.username(),
             newUser.email(),
             passwordEncoder.encode(newUser.password()),
-            role,
+            UserRole.fromString(newUser.role()),
             null,
             null
         );
@@ -77,7 +75,7 @@ public class UserService {
             savedUser.getId(),
             savedUser.getUsername(),
             savedUser.getEmail(),
-            role,
+            savedUser.getRole(),
             savedUser.getCreatedAt()
         );
     }
@@ -99,9 +97,9 @@ public class UserService {
         return users;
     }
 
-public UserResponseDTO findById(UUID id) {
+    public UserResponseDTO findById(UUID id) {
         User registeredUser = repository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException("User with id "+ id + " not found"));
+            .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
 
         return new UserResponseDTO(
             registeredUser.getId(),
