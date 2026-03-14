@@ -101,17 +101,17 @@ Todas as variáveis são definidas no arquivo `.env` na raiz do projeto. Copie o
 cp .env.example .env
 ```
 
-| Variável | Padrão | Descrição |
-|---|---|---|
+| Variável | Padrão     | Descrição |
+|---|------------|---|
 | `DB_NAME` | `youshare` | Nome do banco de dados |
 | `DB_USER` | `postgres` | Usuário do PostgreSQL |
 | `DB_PASSWORD` | `postgres` | Senha do PostgreSQL |
-| `DB_PORT` | `5432` | Porta exposta do PostgreSQL |
-| `API_PORT` | `8080` | Porta exposta da API |
-| `JWT_SECRET` | *(valor padrão)* | Segredo para assinar tokens JWT |
-| `LOG_LEVEL_ROOT` | `INFO` | Nível de log global |
-| `LOG_LEVEL_APP` | `DEBUG` | Nível de log da aplicação |
-| `LOG_LEVEL_SECURITY` | `INFO` | Nível de log do Spring Security |
+| `DB_PORT` | `5432`     | Porta exposta do PostgreSQL |
+| `API_PORT` | `8080`     | Porta exposta da API |
+| `JWT_SECRET` | `mysecret` | Segredo para assinar tokens JWT |
+| `LOG_LEVEL_ROOT` | `INFO`     | Nível de log global |
+| `LOG_LEVEL_APP` | `DEBUG`    | Nível de log da aplicação |
+| `LOG_LEVEL_SECURITY` | `INFO`     | Nível de log do Spring Security |
 
 > ⚠️ **Produção:** troque `JWT_SECRET`, `DB_PASSWORD` e use um gerenciador de segredos. Nunca comite o arquivo `.env`.
 
@@ -237,7 +237,7 @@ notifications (user_id, related_project_id)
 | `MemberRole` | `OWNER`, `EDITOR` |
 | `InviteStatus` | `PENDING`, `ACCEPTED`, `DECLINED` |
 | `VersionStatus` | `DRAFT`, `APPROVED`, `REJECTED` |
-| `NotificationType` | *(ver enum)* |
+| `NotificationType` | `EDITOR_INVITE`, `NEW_VERSION`, `NEW_COMMENT` |
 
 ---
 
