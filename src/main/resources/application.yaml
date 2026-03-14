@@ -3,15 +3,15 @@ spring:
     name: youshare
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/youshare
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/youshare}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
+    show-sql: false
     open-in-view: false
     properties:
       hibernate:
@@ -23,8 +23,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:100MB}
+      max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:100MB}
       enabled: true
 
 app:
@@ -35,4 +35,27 @@ app:
 api:
   security:
     token:
-      secret: 9f4b1c8e3a7d2f6c4b5e1a9d8c7f3e2a6b4c1d9e8f7a3c2b5d6e1f9a8c7d4e3
+      secret: ${API_SECURITY_TOKEN_SECRET:9f4b1c8e3a7d2f6c4b5e1a9d8c7f3e2a6b4c1d9e8f7a3c2b5d6e1f9a8c7d4e3}
+
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    com.noxus.youshare: ${LOGGING_LEVEL_COM_NOXUS_YOUSHARE:DEBUG}
+    org.springframework.security: ${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY:INFO}
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+    org.flywaydb: INFO
+
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+  file:
+    name: ${LOGGING_FILE_NAME:logs/youshare.log}
+
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 300MB
+      file-name-pattern: logs/youshare-%d{yyyy-MM-dd}.%i.log.gz

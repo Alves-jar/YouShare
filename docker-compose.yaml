@@ -1,16 +1,93 @@
 services:
+
   postgres:
-    image: postgres:18-alpine
-    container_name: youshare
+    image: postgres:16-alpine
+    container_name: youshare-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: youshare
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME:-youshare}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - youshare-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-youshare}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: youshare-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # DataSource – overrides application.yaml
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-youshare}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-postgres}
+
+      # JWT secret (override in production via .env or secret manager)
+      API_SECURITY_TOKEN_SECRET: ${JWT_SECRET:-9f4b1c8e3a7d2f6c4b5e1a9d8c7f3e2a6b4c1d9e8f7a3c2b5d6e1f9a8c7d4e3}
+
+      # Logging
+      LOGGING_LEVEL_ROOT: ${LOG_LEVEL_ROOT:-INFO}
+      LOGGING_LEVEL_COM_NOXUS_YOUSHARE: ${LOG_LEVEL_APP:-DEBUG}
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: ${LOG_LEVEL_SECURITY:-INFO}
+      LOGGING_FILE_NAME: /app/logs/youshare.log
+
+      # Multipart upload limits
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 100MB
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 100MB
+
+      # JVM tuning
+      JAVA_OPTS: >-
+        -Xms256m
+        -Xmx512m
+        -XX:+UseContainerSupport
+    ports:
+      - "${API_PORT:-8080}:8080"
+    volumes:
+      - video_uploads:/app/uploads/videos
+      - api_logs:/app/logs
+    networks:
+      - youshare-net
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --quiet --spider http://localhost:8080/swagger-ui/index.html || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+        labels: "service=youshare-api"
 
 volumes:
   postgres_data:
+    name: youshare_postgres_data
+  video_uploads:
+    name: youshare_video_uploads
+  api_logs:
+    name: youshare_api_logs
+
+networks:
+  youshare-net:
+    name: youshare-network
+    driver: bridge
