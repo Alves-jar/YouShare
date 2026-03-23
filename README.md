@@ -13,6 +13,7 @@ API REST para gerenciamento colaborativo de projetos de vídeo. Permite que cria
 - [Configuração de Ambiente](#configuração-de-ambiente)
 - [Executando Localmente (sem Docker)](#executando-localmente-sem-docker)
 - [Estrutura do Projeto](#estrutura-do-projeto)
+- [Testes](#testes)
 - [Endpoints da API](#endpoints-da-api)
 - [Modelo de Dados](#modelo-de-dados)
 - [Logs](#logs)
@@ -47,6 +48,7 @@ O YouShare é uma plataforma colaborativa onde **Creators** criam projetos de v�
 | Auth0 Java JWT | 4.4.0 | Geração e validação de tokens |
 | Lombok | — | Redução de boilerplate |
 | SpringDoc OpenAPI | 2.8.6 | Documentação Swagger |
+| Mockito | — | Testes unitários |
 | Docker / Compose | — | Containerização |
 
 ---
@@ -151,12 +153,36 @@ youshare/
 │       └── resources/
 │           ├── application.yaml  # Configuração principal
 │           └── db/migration/     # Scripts Flyway (V1…V4)
+├── src/test/                     # Testes JUnit e Mockito
+│   └── java/com/noxus/youshare/service/
 ├── Dockerfile                    # Build multi-stage
 ├── docker-compose.yml            # API + PostgreSQL
 ├── .env.example                  # Template de variáveis
 ├── .dockerignore
 └── pom.xml
 ```
+
+---
+
+## Testes
+
+O projeto inclui testes unitários com JUnit 5 e Mockito:
+
+```bash
+# Executar todos os testes
+mvn test
+
+# Executar testes específicos
+mvn test -Dtest="UserServiceTest,ProjectServiceTest,VideoServiceTest"
+```
+
+### Cobertura
+
+| Classe de Teste | Testes |
+|---|---|
+| `UserServiceTest` | `findAll`, `findById`, `create` |
+| `ProjectServiceTest` | `findAll`, `findById`, `create` |
+| `VideoServiceTest` | `findByProjectId`, `findById` |
 
 ---
 
@@ -209,9 +235,22 @@ Authorization: Bearer <token>
 | `GET` | `/api/videos/{videoId}/download` | Baixa o arquivo de vídeo |
 | `DELETE` | `/api/videos/{videoId}` | Remove um vídeo |
 
-### Versões de Vídeo, Comentários e Notificações
+### Versões de Vídeo
 
-Consulte o Swagger UI para os endpoints completos de `/api/videos/{id}/versions`, `/api/videos/{id}/comments` e `/notifications`.
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/api/video-versions/videos/{videoId}` | Upload nova versão (editor) |
+| `GET` | `/api/video-versions/videos/{videoId}` | Lista versões do vídeo |
+| `GET` | `/api/video-versions/{versionId}` | Detalha uma versão |
+| `GET` | `/api/video-versions/{versionId}/download` | Baixa arquivo da versão |
+| `POST` | `/api/video-versions/{versionId}/approve` | Aprova versão (creator) |
+| `POST` | `/api/video-versions/{versionId}/reject` | Rejeita versão (creator) |
+| `GET` | `/api/video-versions/user/{userId}` | Lista versões do usuário |
+| `GET` | `/api/video-versions/pending` | Lista versões pendentes |
+
+### Comentários e Notificações
+
+Consulte o Swagger UI para os endpoints completos de `/api/videos/{id}/comments` e `/notifications`.
 
 ---
 
